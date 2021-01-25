@@ -27,7 +27,7 @@ del href[-n:]
 
 i=0
 for x in href:
-    filename = Path('./prices/'+names[i]+'.pdf')
+    filename = Path('./prices/'+str(i)+' '+names[i]+'.pdf')
     url = 'https://www.ontariosheep.org'+x
     response = requests.get(url)
     filename.write_bytes(response.content)
