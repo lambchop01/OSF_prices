@@ -12,8 +12,60 @@ def csvstrings(all,olex,osi):
     with open(filename) as csvDataFile:
         g=list(csv.reader(csvDataFile))
     dateobj = datetime.datetime.strptime(g[1][2], '%B %d, %Y')
-    date = dateobj.strftime("%Y-%m-%d %H:%M:%S.%f")
-    # headers --> date, 80-94, hd, price, weight, 95-109, hd, price, weight, 110+, hd, price, weight, sheep, hd, price, weight
-    all.append(date+',80-94lbs,'+g[8][1]+','+g[8][2].replace('-','')+','+g[8][3].replace('-','')+',95-109lbs,'+g[9][1]+','+g[9][2].replace('-','')+','+g[9][3].replace('-','')+',110+lbs,'+g[10][1]+','+g[10][2].replace('-','')+','+g[10][3].replace('-','')+',sheep,'+g[11][1]+','+g[11][2].replace('-','')+','+g[11][3].replace('-',''))
-    olex.append(date+',80-94lbs,'+g[35][1]+','+g[35][2].replace('-','')+','+g[35][3].replace('-','')+',95-109lbs,'+g[36][1]+','+g[36][2].replace('-','')+','+g[36][3].replace('-','')+',110+lbs,'+g[37][1]+','+g[37][2].replace('-','')+','+g[37][3].replace('-','')+',sheep,'+g[38][1]+','+g[38][2].replace('-','')+','+g[38][3].replace('-',''))
-    osi.append(date+',80-94lbs,'+g[35][4]+','+g[35][5].replace('-','')+','+g[35][6].replace('-','')+',95-109lbs,'+g[36][4]+','+g[36][5].replace('-','')+','+g[36][6].replace('-','')+',110+lbs,'+g[37][4]+','+g[37][5].replace('-','')+','+g[37][6].replace('-','')+',sheep,'+g[38][4]+','+g[38][5].replace('-','')+','+g[38][6].replace('-',''))
+    
+    #all
+    date = dateobj.strftime("'%Y-%m-%d'")+','
+    lowhd = g[8][1]+','
+    lowprice = str(float('0'+g[8][2].replace('-',''))/100)+','
+    lowweight = g[8][8].replace('-','')+','
+    medhd = g[9][1]+','
+    medprice = str(float('0'+g[9][2].replace('-',''))/100)+','
+    medweight = g[9][8].replace('-','')+','
+    highhd = g[10][1]+','
+    highprice = str(float('0'+g[10][2].replace('-',''))/100)+','
+    highweight = g[10][8].replace('-','')+','
+    sheephd = g[11][1]+','
+    sheepprice = str(float('0'+g[10][2].replace('-',''))/100)+','
+    sheepweight = g[11][8].replace('-','')+','
+    
+    all.append(date+lowhd+lowprice+lowweight+medhd+medprice+medweight+highhd+highprice+highweight+sheephd+sheepprice+sheepweight)
+    
+    #olex
+    date = dateobj.strftime("'%Y-%m-%d'")+','
+    lowhd = g[35][4]+','
+    lowprice = str(float('0'+g[35][5].replace('-',''))/100)+','
+    lowweight = g[35][6].replace('-','')+','
+    medhd = g[36][4]+','
+    medprice = str(float('0'+g[36][5].replace('-',''))/100)+','
+    medweight = g[36][6].replace('-','')+','
+    highhd = g[37][4]+','
+    highprice = str(float('0'+g[37][5].replace('-',''))/100)+','
+    highweight = g[37][6].replace('-','')+','
+    sheephd = g[38][4]+','
+    sheepprice = str(float('0'+g[38][5].replace('-',''))/100)+','
+    sheepweight = g[38][6].replace('-','')+','
+    
+    olex.append(date+lowhd+lowprice+lowweight+medhd+medprice+medweight+highhd+highprice+highweight+sheephd+sheepprice+sheepweight)
+    
+    #osi
+    date = dateobj.strftime("'%Y-%m-%d'")+','
+    lowhd = g[35][7]+','
+    lowprice = str(float('0'+g[35][8].replace('-',''))/100)+','
+    lowweight = g[35][9].replace('-','')+','
+    medhd = g[36][7]+','
+    medprice = str(float('0'+g[36][8].replace('-',''))/100)+','
+    medweight = g[36][9].replace('-','')+','
+    highhd = g[37][7]+','
+    highprice = str(float('0'+g[37][8].replace('-',''))/100)+','
+    highweight = g[37][9].replace('-','')+','
+    sheephd = g[38][7]+','
+    sheepprice = str(float('0'+g[38][8].replace('-',''))/100)+','
+    sheepweight = g[38][9].replace('-','')+','
+    
+    osi.append(date+lowhd+lowprice+lowweight+medhd+medprice+medweight+highhd+highprice+highweight+sheephd+sheepprice+sheepweight)
+    
+    
+all=[]
+olex=[]
+osi=[]
+csvstrings(all, olex, osi)
