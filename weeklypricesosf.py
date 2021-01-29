@@ -6,6 +6,15 @@ import os
 import logging
 import csv
 import csvsingle
+from datetime import date
+
+"""
+to do:
+2 a. insert into database
+  b. import CSV into database instead
+3 a. check with jenny on what data to pull out
+
+"""
 
 logging.basicConfig(filename='prices.log', filemode='a',format='%(asctime)s - %(message)s',level=logging.INFO)
 # define a Handler which writes INFO messages or higher to the sys.stderr
@@ -31,11 +40,31 @@ for file in soup.find_all('p'):
     for list in file.find_all('a'):
         href.append(list.get('href'))
         names.append(list.string)
-        
+logging.debug('href = '+str(len(href)))
+
+# remove 4 from the bottom for extraniuos links
 n=4
 del names[-n:]
 del href[-n:]
-logging.info('Got list of files to download')
+logging.debug('href = '+str(len(href)))
+
+"""
+# remove week num from top to only get 1 week from this year
+today= date.today()
+weeknum = int(today.strftime("%W"))-1
+logging.debug('Weeknum = '+str(weeknum))
+names = names[weeknum:]
+href = href[weeknum:]
+logging.debug('href = '+str(len(href)))
+
+# remove previous years from bottom
+n=312
+del names[-n:]
+del href[-n:]
+logging.debug('href = '+str(len(href)))
+"""
+
+logging.info('Got list of files to download, total of '+str(len(href)))
 
 outcsv = 'output.csv'
 i=0
@@ -59,6 +88,7 @@ def mastercsv(all,olex,osi,n):
         f = open('osiprices.csv','a+')
         f.write(week+'\r\n')
         f.close
+        n=n+1
     logging.info(str(n)+' weeks saved')
     
 for x in href:
@@ -71,14 +101,11 @@ for x in href:
     logging.info(str(i)+' converted : '+str(name))
     
     csvsingle.csvstrings(all,olex,osi)
-    logging.debug(all)
     logging.info('collected: '+name)
 
 logging.info(str(i)+' files downloaded and converted')
 
-n=1
+n=0
 mastercsv(all,olex,osi,n)
 logging.info('All Done!')
-   
-print('All Done! '+str(i)+' files downloaded')
     
