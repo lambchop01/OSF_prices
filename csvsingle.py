@@ -26,7 +26,7 @@ def csvstrings(all,olex,osi):
     highweight = g[10][8].replace('-','')+','
     sheephd = g[11][1]+','
     sheepprice = str(float('0'+g[10][2].replace('-',''))/100)+','
-    sheepweight = g[11][8].replace('-','')+','
+    sheepweight = g[11][8].replace('-','')
     
     all.append(date+lowhd+lowprice+lowweight+medhd+medprice+medweight+highhd+highprice+highweight+sheephd+sheepprice+sheepweight)
     
@@ -43,7 +43,7 @@ def csvstrings(all,olex,osi):
     highweight = g[37][6].replace('-','')+','
     sheephd = g[38][4]+','
     sheepprice = str(float('0'+g[38][5].replace('-',''))/100)+','
-    sheepweight = g[38][6].replace('-','')+','
+    sheepweight = g[38][6].replace('-','')
     
     olex.append(date+lowhd+lowprice+lowweight+medhd+medprice+medweight+highhd+highprice+highweight+sheephd+sheepprice+sheepweight)
     
@@ -60,7 +60,7 @@ def csvstrings(all,olex,osi):
     highweight = g[37][9].replace('-','')+','
     sheephd = g[38][7]+','
     sheepprice = str(float('0'+g[38][8].replace('-',''))/100)+','
-    sheepweight = g[38][9].replace('-','')+','
+    sheepweight = g[38][9].replace('-','')
     
     osi.append(date+lowhd+lowprice+lowweight+medhd+medprice+medweight+highhd+highprice+highweight+sheephd+sheepprice+sheepweight)
     
