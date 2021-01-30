@@ -28,7 +28,13 @@ def csvstrings(all,olex,osi):
     sheepprice = str(float('0'+g[10][2].replace('-',''))/100)+','
     sheepweight = g[11][8].replace('-','')
     
-    all.append(date+lowhd+lowprice+lowweight+medhd+medprice+medweight+highhd+highprice+highweight+sheephd+sheepprice+sheepweight)
+    str1 = date+lowhd+lowprice+lowweight+medhd+medprice+medweight+highhd+highprice+highweight+sheephd+sheepprice+sheepweight
+    str2 = str1.replace(',,',',0,')
+    str3 = str2.replace(',,',',0,')
+    if (str3[-1] == ","):
+        str4 = str3+'0'
+    else: str4 = str3
+    all.append(str4)
     
     #olex
     date = dateobj.strftime("'%Y-%m-%d'")+','
@@ -45,7 +51,13 @@ def csvstrings(all,olex,osi):
     sheepprice = str(float('0'+g[38][5].replace('-',''))/100)+','
     sheepweight = g[38][6].replace('-','')
     
-    olex.append(date+lowhd+lowprice+lowweight+medhd+medprice+medweight+highhd+highprice+highweight+sheephd+sheepprice+sheepweight)
+    str1 = date+lowhd+lowprice+lowweight+medhd+medprice+medweight+highhd+highprice+highweight+sheephd+sheepprice+sheepweight
+    str2 = str1.replace(',,',',0,')
+    str3 = str2.replace(',,',',0,')
+    if (str3[-1] == ","):
+        str4 = str3+'0'
+    else: str4 = str3
+    olex.append(str4)
     
     #osi
     date = dateobj.strftime("'%Y-%m-%d'")+','
@@ -62,7 +74,13 @@ def csvstrings(all,olex,osi):
     sheepprice = str(float('0'+g[38][8].replace('-',''))/100)+','
     sheepweight = g[38][9].replace('-','')
     
-    osi.append(date+lowhd+lowprice+lowweight+medhd+medprice+medweight+highhd+highprice+highweight+sheephd+sheepprice+sheepweight)
+    str1 = date+lowhd+lowprice+lowweight+medhd+medprice+medweight+highhd+highprice+highweight+sheephd+sheepprice+sheepweight
+    str2 = str1.replace(',,',',0,')
+    str3 = str2.replace(',,',',0,')
+    if (str3[-1] == ","):
+        str4 = str3+'0'
+    else: str4 = str3
+    osi.append(str4)
     
     
 all=[]
