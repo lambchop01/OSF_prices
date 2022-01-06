@@ -7,16 +7,10 @@ import logging
 import csv
 import csvsingle
 from datetime import date
+import pymysql.cursors
 
-"""
-to do:
-2 a. insert into database
-  b. import CSV into database instead
-3 a. check with jenny on what data to pull out
 
-"""
-
-logging.basicConfig(filename='prices.log', filemode='a',format='%(asctime)s - %(message)s',level=logging.INFO)
+logging.basicConfig(filename='prices.log', filemode='a',format='%(asctime)s - %(message)s',level=logging.DEBUG)
 # define a Handler which writes INFO messages or higher to the sys.stderr
 console = logging.StreamHandler()
 console.setLevel(logging.INFO)
@@ -48,21 +42,24 @@ del names[-n:]
 del href[-n:]
 logging.debug('href = '+str(len(href)))
 
-"""
+
 # remove week num from top to only get 1 week from this year
 today= date.today()
-weeknum = int(today.strftime("%W"))-1
+weeknum = int(today.strftime("%W"))
+if weeknum > 2:
+  weeknum = weeknum -2
 logging.debug('Weeknum = '+str(weeknum))
 names = names[weeknum:]
 href = href[weeknum:]
 logging.debug('href = '+str(len(href)))
 
 # remove previous years from bottom
-n=312
+year = int(today.strftime("%Y"))
+n=(year - 2015)*52
 del names[-n:]
 del href[-n:]
 logging.debug('href = '+str(len(href)))
-"""
+
 
 logging.info('Got list of files to download, total of '+str(len(href)))
 
@@ -90,6 +87,49 @@ def mastercsv(all,olex,osi,n):
         f.close
         n=n+1
     logging.info(str(n)+' weeks saved')
+
+def executeSql(sql):
+    mariadb = pymysql.connect(
+        host    = '192.168.2.16',
+        port    = int('3306'),
+        user    = 'prices',
+        password= 'klamb',
+        db        = 'osfprices',
+        charset='utf8mb4',
+        cursorclass=pymysql.cursors.DictCursor
+    )
+    try:
+        with mariadb.cursor() as cursor:
+            cursor.execute(sql)
+        mariadb.commit()
+    finally:
+        mariadb.close()
+
+def database(all, olex, osi):
+    n=0
+    for x in all:
+        sql = ("INSERT IGNORE INTO `osfprices`.`all` " + "VALUES ("+x+")")
+        n=n+1
+        logging.debug(str(n)+' done:'+sql)
+        executeSql(sql)
+    logging.info('all prices uploaded to database')
+    n=0
+    for x in olex:
+        sql = ("INSERT IGNORE INTO `osfprices`.`olex` " + "VALUES ("+x+")")
+        n=n+1
+        logging.debug(str(n)+' done:'+sql)
+        executeSql(sql)
+    logging.info('olex prices uploaded to database')
+    n=0
+    for x in osi:
+        sql = ("INSERT IGNORE INTO `osfprices`.`osi` " + "VALUES ("+x+")")
+        n=n+1
+        logging.debug(str(n)+' done:'+sql)
+        executeSql(sql)
+    logging.info('osi prices uploaded to database')
+
+def notification(message):
+    requests.post('https://push.lambspork.ca/message?token=AqyLPxGXB..MSuT', data={'title':'OSF Prices','message':message, 'priority':'2'})
     
 for x in href:
     url = 'https://www.ontariosheep.org'+x
@@ -98,14 +138,18 @@ for x in href:
     
     name = names[i]
     i=i+1
-    logging.info(str(i)+' converted : '+str(name))
     
     csvsingle.csvstrings(all,olex,osi)
-    logging.info('collected: '+name)
+    logging.info(str(i)+' converted : '+str(name))
 
-logging.info(str(i)+' files downloaded and converted')
+message = (str(i)+' files downloaded and converted')
+logging.info(message)
+
 
 n=0
 mastercsv(all,olex,osi,n)
+database(all,olex,osi)
 logging.info('All Done!')
+message = message + ', All done!'
+notification(message)
     
