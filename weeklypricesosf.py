@@ -1,3 +1,4 @@
+# bash command to run: bash /home/kevin/docker/scripts/OSF_prices/osfprices.sh
 import requests
 from bs4 import BeautifulSoup
 import tabula
@@ -45,9 +46,9 @@ logging.debug('href = '+str(len(href)))
 
 # remove week num from top to only get 1 week from this year
 today= date.today()
-weeknum = int(today.strftime("%W"))
-if weeknum > 2:
-  weeknum = weeknum -2
+weeknum = int(today.strftime("%W")) -2
+if weeknum < 0:
+  weeknum = 0
 logging.debug('Weeknum = '+str(weeknum))
 names = names[weeknum:]
 href = href[weeknum:]
