@@ -1,0 +1,7 @@
+requests
+bs4
+tabula-py
+pandas
+pymysql
+gspread
+oauth2client
