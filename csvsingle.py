@@ -14,7 +14,7 @@ def csvstrings(all,olex,osi):
     dateobj = datetime.datetime.strptime(g[1][2], '%B %d, %Y')
     
     #all
-    date = dateobj.strftime("'%Y-%m-%d'")+','
+    date = dateobj.strftime("%Y-%m-%d")+','
     lowhd = g[8][1]+','
     lowprice = str(float('0'+g[8][2].replace('-',''))/100)+','
     lowweight = g[8][8].replace('-','')+','
@@ -25,8 +25,8 @@ def csvstrings(all,olex,osi):
     highprice = str(float('0'+g[10][2].replace('-',''))/100)+','
     highweight = g[10][8].replace('-','')+','
     sheephd = g[11][1]+','
-    sheepprice = str(float('0'+g[10][2].replace('-',''))/100)+','
-    sheepweight = g[11][8].replace('-','')
+    sheepprice = str(float('0'+g[11][2].replace('-',''))/100)+','
+    sheepweight = g[11][8].replace('-','')+"|"
     
     str1 = date+lowhd+lowprice+lowweight+medhd+medprice+medweight+highhd+highprice+highweight+sheephd+sheepprice+sheepweight
     str2 = str1.replace(',,',',0,')
@@ -37,7 +37,7 @@ def csvstrings(all,olex,osi):
     all.append(str4)
     
     #olex
-    date = dateobj.strftime("'%Y-%m-%d'")+','
+    date = dateobj.strftime("%Y-%m-%d")+','
     lowhd = g[35][4]+','
     lowprice = str(float('0'+g[35][5].replace('-',''))/100)+','
     lowweight = g[35][6].replace('-','')+','
@@ -49,7 +49,7 @@ def csvstrings(all,olex,osi):
     highweight = g[37][6].replace('-','')+','
     sheephd = g[38][4]+','
     sheepprice = str(float('0'+g[38][5].replace('-',''))/100)+','
-    sheepweight = g[38][6].replace('-','')
+    sheepweight = g[38][6].replace('-','')+"|"
     
     str1 = date+lowhd+lowprice+lowweight+medhd+medprice+medweight+highhd+highprice+highweight+sheephd+sheepprice+sheepweight
     str2 = str1.replace(',,',',0,')
@@ -60,7 +60,7 @@ def csvstrings(all,olex,osi):
     olex.append(str4)
     
     #osi
-    date = dateobj.strftime("'%Y-%m-%d'")+','
+    date = dateobj.strftime("%Y-%m-%d")+','
     lowhd = g[35][7]+','
     lowprice = str(float('0'+g[35][8].replace('-',''))/100)+','
     lowweight = g[35][9].replace('-','')+','
@@ -72,7 +72,7 @@ def csvstrings(all,olex,osi):
     highweight = g[37][9].replace('-','')+','
     sheephd = g[38][7]+','
     sheepprice = str(float('0'+g[38][8].replace('-',''))/100)+','
-    sheepweight = g[38][9].replace('-','')
+    sheepweight = g[38][9].replace('-','')+"|"
     
     str1 = date+lowhd+lowprice+lowweight+medhd+medprice+medweight+highhd+highprice+highweight+sheephd+sheepprice+sheepweight
     str2 = str1.replace(',,',',0,')

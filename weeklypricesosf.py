@@ -1,4 +1,4 @@
-# bash command to run: bash /home/kevin/docker/scripts/OSF_prices/osfprices.sh
+# bash command to run: bash /home/kevin/scripts/OSF_prices/osfprices.sh
 import requests
 from bs4 import BeautifulSoup
 import tabula
@@ -9,6 +9,8 @@ import csv
 import csvsingle
 from datetime import date
 import pymysql.cursors
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
 
 logging.basicConfig(filename='prices.log', filemode='a',format='%(asctime)s - %(message)s',level=logging.DEBUG)
@@ -41,25 +43,25 @@ logging.debug('href = '+str(len(href)))
 n=4
 del names[-n:]
 del href[-n:]
-logging.debug('href = '+str(len(href)))
+logging.debug('remove '+str(n)+' href from bottom of the list, remaining = '+str(len(href)))
 
 
 # remove week num from top to only get 1 week from this year
 today= date.today()
-weeknum = int(today.strftime("%W")) -2
+weeknum = int(today.strftime("%W")) -1 +1 #1 weird extra...
 if weeknum < 0:
   weeknum = 0
 logging.debug('Weeknum = '+str(weeknum))
 names = names[weeknum:]
 href = href[weeknum:]
-logging.debug('href = '+str(len(href)))
+logging.debug('removed weeknum from top, remaining = '+str(len(href)))
 
 # remove previous years from bottom
 year = int(today.strftime("%Y"))
 n=(year - 2015)*52
 del names[-n:]
 del href[-n:]
-logging.debug('href = '+str(len(href)))
+logging.debug('removed '+str(n)+' from bottom for previous year, remaining = '+str(len(href)))
 
 
 logging.info('Got list of files to download, total of '+str(len(href)))
@@ -72,6 +74,8 @@ osi = []
 
 def csvout(outcsv):
     tabula.convert_into(url, outcsv, output_format="csv", pages="all", guess=False, lattice=True)
+#    df = tabula.read_pdf(url, encoding='utf-8', spreadsheet=True )
+#    df.to_csv('output.csv', encoding='utf-8')
 
 def mastercsv(all,olex,osi,n):
     for week in all:
@@ -87,7 +91,7 @@ def mastercsv(all,olex,osi,n):
         f.write(week+'\r\n')
         f.close
         n=n+1
-    logging.info(str(n)+' weeks saved')
+    logging.info(str(n)+' weeks processed')
 
 def executeSql(sql):
     mariadb = pymysql.connect(
@@ -95,8 +99,8 @@ def executeSql(sql):
         port    = int('3306'),
         user    = 'prices',
         password= 'klamb',
-        db        = 'osfprices',
-        charset='utf8mb4',
+        db      = 'osfprices',
+        charset ='utf8mb4',
         cursorclass=pymysql.cursors.DictCursor
     )
     try:
@@ -105,6 +109,60 @@ def executeSql(sql):
         mariadb.commit()
     finally:
         mariadb.close()
+
+def sheets(all, olex, osi): # Connect to Google Sheets
+    scope = ['https://www.googleapis.com/auth/spreadsheets',
+             "https://www.googleapis.com/auth/drive"]
+    
+    credentials = ServiceAccountCredentials.from_json_keyfile_name("osf-cred.json", scope)
+    gc = gspread.authorize(credentials)
+    
+    spreadsheetId = "1kRogkgxS1NJNxH2BYBI0mfI-xZ73B_sa0WgB1BiNfTM"
+    
+    # all prices
+    list = [l.split(',') for l in ','.join(all).split('|')]
+    logging.debug(list)
+    range = "all!A:A";
+    params = {
+        "valueInputOption" : "USER_ENTERED"
+    } 
+    body = {
+      "majorDimension": "ROWS",
+      "values": list
+    }
+    sht = gc.open_by_key(spreadsheetId)
+    response = sht.values_append(range, params, body)
+
+    # olex prices
+    list = [l.split(',') for l in ','.join(olex).split('|')]
+    logging.debug(list)
+    range = "olex!A:A";
+    params = {
+        "valueInputOption" : "USER_ENTERED"
+    } 
+    body = {
+      "majorDimension": "ROWS",
+      "values": list
+    }
+    sht = gc.open_by_key(spreadsheetId)
+    response = sht.values_append(range, params, body)
+
+    # osi prices
+    list = [l.split(',') for l in ','.join(osi).split('|')]
+    logging.debug(list)
+    range = "osi!A:A";
+    params = {
+        "valueInputOption" : "USER_ENTERED"
+    } 
+    body = {
+      "majorDimension": "ROWS",
+      "values": list
+    }
+    sht = gc.open_by_key(spreadsheetId)
+    response = sht.values_append(range, params, body)
+    logging.info('Saved to Google Sheets')
+
+
 
 def database(all, olex, osi):
     n=0
@@ -149,7 +207,8 @@ logging.info(message)
 
 n=0
 mastercsv(all,olex,osi,n)
-database(all,olex,osi)
+#database(all,olex,osi) #upload to database
+sheets(all,olex,osi) #uplaod to google sheets, requires "osf-cred.json"
 logging.info('All Done!')
 message = message + ', All done!'
 notification(message)
